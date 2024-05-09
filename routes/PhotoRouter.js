@@ -3,6 +3,8 @@ const Photo = require("../db/photoModel");
 const router = express.Router();
 const User = require("../db/userModel");
 const multer = require('multer');
+const jwtAuth = require("../middleware/jwtAuth");
+const path = require('path');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
       cb(null, 'uploads/')  // Thư mục lưu file, đảm bảo thư mục này đã được tạo trong server của bạn
@@ -15,7 +17,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/", upload.single('photo'), async (request, response) => {
+router.post("/", jwtAuth, upload.single('photo'), async (request, response) => {
   if (!request.file) {
       return response.status(400).send({ error: "Không có file nào được tải lên" });
   }
@@ -23,7 +25,7 @@ router.post("/", upload.single('photo'), async (request, response) => {
   try {
       const newPhoto = new Photo({
           file_name: request.file.filename,
-          user_id: request.body.userId, // Giả sử userId được gửi qua body. Trong thực tế, bạn nên lấy từ session hoặc token
+          user_id: request.userId, // Sử dụng userId từ token đã xác thực
           date_time: new Date()
       });
       await newPhoto.save();
