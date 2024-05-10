@@ -34,6 +34,27 @@ router.post("/", jwtAuth, upload.single('photo'), async (request, response) => {
       response.status(500).send({ error: "Không thể lưu ảnh" });
   }
 });
+router.delete('/:id', jwtAuth, async (req, res) => {
+  try {
+    const photoId = req.params.id;
+
+    // Check if the photo exists
+    const photoExists = await Photo.exists({ _id: photoId });
+    if (!photoExists) {
+      return res.status(400).send({ error: 'Ảnh không tồn tại' });
+    }
+
+    // Delete the photo
+    await Photo.findByIdAndDelete(photoId);
+
+    // Send the response
+    res.send({ message: 'Ảnh đã được xóa thành công' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: 'Đã xảy ra lỗi' });
+  }
+});
+
 
 
 router.get("/", async (req, res) => {
