@@ -25,8 +25,8 @@ async function dbLoad() {
   const mapFakeId2RealId = {};
   for (const user of userModels) {
     userObj = new User({
-      login_name: user.login_name,
-      password: user.password,
+      login_name: user.login_name.trim(),
+      password: user.password.trim(),
       first_name: user.first_name,
       last_name: user.last_name,
       location: user.location,
