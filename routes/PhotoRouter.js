@@ -24,6 +24,7 @@ router.post("/", jwtAuth, upload.single('photo'), async (request, response) => {
 
   try {
       const newPhoto = new Photo({
+          title: request.body.title,
           file_name: request.file.filename,
           user_id: request.userId, 
           date_time: new Date()
@@ -76,8 +77,8 @@ router.get('/photosOfUser/:id', async (req, res) => {
       }
   
       
-      const photos = await Photo.find({ user_id: userId })
-        .select('_id user_id comments file_name date_time');
+      const photos = await Photo.find({ user_id: userId });
+       
   
       
       if (photos.length === 0) {
@@ -109,7 +110,8 @@ router.get('/photosOfUser/:id', async (req, res) => {
             user_id: photo.user_id,
             file_name: photo.file_name,
             date_time: photo.date_time,
-            comments: formattedComments
+            comments: formattedComments,
+            title: photo.title
           };
         })
       );
@@ -121,6 +123,26 @@ router.get('/photosOfUser/:id', async (req, res) => {
       res.status(500).send({ error: 'Đã xảy ra lỗi' });
     }
   });
-
+  router.put('/editPhoto/:id', jwtAuth, async (req, res) => {
+    try {
+      const photoId = req.params.id;
+      const newTitle = req.body.title;
+  
+      // Check if the photo exists
+      const photoExists = await Photo.exists({ _id: photoId });
+      if (!photoExists) {
+        return res.status(400).send({ error: 'Ảnh không tồn tại' });
+      }
+  
+      // Update the title of the photo
+      const updatedPhoto = await Photo.findByIdAndUpdate(photoId, { title: newTitle }, { new: true });
+  
+      // Send the updated photo
+      res.send(updatedPhoto);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ error: 'Đã xảy ra lỗi' });
+    }
+  });
 
 module.exports = router;

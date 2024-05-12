@@ -16,6 +16,8 @@ const commentSchema = new mongoose.Schema({
  * Define the Mongoose Schema for a Photo.
  */
 const photoSchema = new mongoose.Schema({
+  // The title of the photo.
+  title: { type: String},
   // Name of the file containing the photo (in the project6/images directory).
   file_name: { type: String },
   // The date and time when the photo was added to the database.

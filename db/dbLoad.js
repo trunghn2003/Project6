@@ -57,6 +57,7 @@ async function dbLoad() {
       file_name: photo.file_name,
       date_time: photo.date_time,
       user_id: mapFakeId2RealId[photo.user_id],
+      title: photo.title,
     });
     photo.objectID = photoObj._id;
     if (photo.comments) {
