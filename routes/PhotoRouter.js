@@ -7,7 +7,7 @@ const jwtAuth = require("../middleware/jwtAuth");
 const path = require('path');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-      cb(null, 'uploads/')  // Thư mục lưu file, đảm bảo thư mục này đã được tạo trong server của bạn
+      cb(null, 'uploads/')  
   },
   filename: function (req, file, cb) {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
@@ -25,7 +25,7 @@ router.post("/", jwtAuth, upload.single('photo'), async (request, response) => {
   try {
       const newPhoto = new Photo({
           file_name: request.file.filename,
-          user_id: request.userId, // Sử dụng userId từ token đã xác thực
+          user_id: request.userId, 
           date_time: new Date()
       });
       await newPhoto.save();
@@ -38,16 +38,16 @@ router.delete('/:id', jwtAuth, async (req, res) => {
   try {
     const photoId = req.params.id;
 
-    // Check if the photo exists
+    
     const photoExists = await Photo.exists({ _id: photoId });
     if (!photoExists) {
       return res.status(400).send({ error: 'Ảnh không tồn tại' });
     }
 
-    // Delete the photo
+    
     await Photo.findByIdAndDelete(photoId);
 
-    // Send the response
+    
     res.send({ message: 'Ảnh đã được xóa thành công' });
   } catch (error) {
     console.error(error);
@@ -69,28 +69,28 @@ router.get('/photosOfUser/:id', async (req, res) => {
     try {
       const userId = req.params.id;
   
-      // Check if the user exists
+      
       const userExists = await User.exists({ _id: userId });
       if (!userExists) {
         return res.status(400).send({ error: 'Người dùng không tồn tại' });
       }
   
-      // Fetch photos related to the user
+      
       const photos = await Photo.find({ user_id: userId })
         .select('_id user_id comments file_name date_time');
   
-      // Check if the user has any photos
+      
       if (photos.length === 0) {
         return res.status(404).send({ error: 'Không có ảnh nào cho người dùng này' });
       }
   
-      // Format photos and comments according to the specified structure
+      
       const formattedPhotos = await Promise.all(
         photos.map(async (photo) => {
-          // Map comments with user information
+          
           const formattedComments = await Promise.all(
             photo.comments.map(async (comment) => {
-              // Fetch user information based on user_id in the comment
+              
               const user = await User.findById(comment.user_id)
                 .select('_id first_name last_name');
   
@@ -98,7 +98,7 @@ router.get('/photosOfUser/:id', async (req, res) => {
                 _id: comment._id,
                 comment: comment.comment,
                 date_time: comment.date_time,
-                user_id: comment.user_id, // Retain the original user_id
+                user_id: comment.user_id, 
                 user: user ? { _id: user._id, first_name: user.first_name, last_name: user.last_name } : null
               };
             })
@@ -114,7 +114,7 @@ router.get('/photosOfUser/:id', async (req, res) => {
         })
       );
   
-      // Send the response
+      
       res.send(formattedPhotos);
     } catch (error) {
       console.error(error);

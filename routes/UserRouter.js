@@ -18,7 +18,7 @@ router.get('/list', async (req, res) => {
 });
 
 
-// Endpoint GET /user/:id: Trả về thông tin chi tiết người dùng
+
 router.get('/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id, '_id first_name last_name location description occupation login_name');
@@ -33,17 +33,17 @@ router.get('/:id', async (req, res) => {
 
 router.post("/update", jwtAuth, async (req, res) => {
     try {
-      const userId = req.userId; // Extracted from the JWT
+      const userId = req.userId; 
       const updateData = req.body;
   
-      // Update the user information based on the data provided
+      
       const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
   
       if (!updatedUser) {
         return res.status(404).send({ error: "User not found" });
       }
   
-      // Return the updated user data (excluding sensitive info)
+      
       const { password, ...userData } = updatedUser.toObject();
       res.send(userData);
     } catch (err) {
