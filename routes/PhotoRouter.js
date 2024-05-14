@@ -128,16 +128,16 @@ router.get('/photosOfUser/:id', async (req, res) => {
       const photoId = req.params.id;
       const newTitle = req.body.title;
   
-      // Check if the photo exists
+      
       const photoExists = await Photo.exists({ _id: photoId });
       if (!photoExists) {
         return res.status(400).send({ error: 'Ảnh không tồn tại' });
       }
   
-      // Update the title of the photo
+      
       const updatedPhoto = await Photo.findByIdAndUpdate(photoId, { title: newTitle }, { new: true });
   
-      // Send the updated photo
+      
       res.send(updatedPhoto);
     } catch (error) {
       console.error(error);

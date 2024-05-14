@@ -35,7 +35,8 @@ router.post("/update", jwtAuth, async (req, res) => {
     try {
       const userId = req.userId; 
       const updateData = req.body;
-  
+      console.log(userId, req.body.userId);
+      
       
       const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
   
